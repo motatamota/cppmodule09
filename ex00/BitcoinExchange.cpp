@@ -42,7 +42,14 @@ int BitcoinExchange::CreateRate(const std::string &day)
 	std::istringstream oss(day);
 	t_data	data;
 	char	c;
+	std::string str;
 
+	str = day.substr(0, 10);
+	if (str[4] != '-' || str[7] != '-')
+	{
+		std::cerr << "Error: " << day << ": unknown format" << std::endl;
+		return (1);
+	}
 	if (!(oss >> data.year))
 	{
 		std::cerr << "Error: " << day << ": is not year" << std::endl;
@@ -91,16 +98,7 @@ int BitcoinExchange::CreateRate(const std::string &day)
 		std::cerr << "Error: " << day << ": out of range day" << std::endl;
 		return (1);
 	}
-	rate_data_.push_back(data);
-	return (0);
-}
-
-int	BitcoinExchange::IsLate(const t_data &src, const t_data &list)
-{
-	if (src.year > list.year ||
-		(src.year == list.year && src.month > list.month) ||
-		(src.year == list.year && src.month == list.month && src.date >= list.date))
-		return (1);
+	rate_data_[str] = data;
 	return (0);
 }
 
@@ -108,9 +106,17 @@ int BitcoinExchange::SearchRate(const std::string &day)
 {
 	std::string::const_iterator i;
 	std::istringstream oss(day);
+	std::istringstream oss1(day);
+	std::string str;
 	t_data	data;
 	char	c;
 
+	oss1 >> str;
+	if (str[4] != '-' || str[7] != '-')
+	{
+		std::cerr << "Error: " << day << ": unknown format" << std::endl;
+		return (1);
+	}
 	if (!(oss >> data.year))
 	{
 		std::cerr << "Error: " << day << ": is not year" << std::endl;
@@ -169,45 +175,25 @@ int BitcoinExchange::SearchRate(const std::string &day)
 		std::cerr << "Error: " << day << ": out of range day" << std::endl;
 		return (1);
 	}
-	std::vector<t_data>::iterator p;
-	for (p = rate_data_.begin(); p < rate_data_.end(); p++)
-	{
-		if (!IsLate(data, *p))
-		{
-			p--;
-			std::cout << data.year << "-";
-			if (data.month < 10)
-				std::cout << "0" << data.month << "-";
-			else
-				std::cout << data.month << "-";
-			if (data.date < 10)
-				std::cout << "0" << data.date << " => ";
-			else
-				std::cout << data.date << " => ";
-			std::cout << data.rate << " = " << data.rate * (*p).rate << std::endl;
-			return (0);
+	std::map<std::string, t_data>::iterator tmp = rate_data_.lower_bound(str);
+	if (tmp == rate_data_.end()) {
+		if (!rate_data_.empty()) {
+			--tmp;
+		} else {
+			std::cerr << "Error: No exchange rate data available." << std::endl;
+			return (1);
 		}
 	}
-	p--;
-	std::cout << data.year << "-";
-	if (data.month < 10)
-		std::cout << "0" << data.month << "-";
-	else
-		std::cout << data.month << "-";
-	if (data.date < 10)
-		std::cout << "0" << data.date << " => ";
-	else
-		std::cout << data.date << " => ";
-	std::cout << data.rate << " = " << data.rate * (*p).rate << std::endl;
-	return (0);
-}
-
-void	BitcoinExchange::Debug()
-{
-	for (std::vector<t_data>::iterator i = rate_data_.begin(); i < rate_data_.end(); i++)
-	{
-		std::cout << (*i).year << ", " << (*i).month << ", " << (*i).date << ", " << (*i).rate << std::endl;
+	else if (tmp->first != str) {
+		if (tmp == rate_data_.begin()) {
+			std::cerr << "Error: No earlier date found for " << str << std::endl;
+			return (1);
+		}
+		--tmp;
 	}
+
+	std::cout << str << " => " << data.rate << " = " << data.rate * tmp->second.rate << std::endl;
+	return (0);
 }
 
 int	BitcoinExchange::CreateRateList(const char *file_path)
