@@ -21,6 +21,7 @@ private:
 	}	t_data;
 
 	std::map<std::string, t_data> rate_data_;
+
 	int	CreateRate(const std::string &day);
 	int	SearchRate(const std::string &day);
 	int IsThisDay(const t_data &data);

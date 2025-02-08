@@ -2,7 +2,7 @@
 
 BitcoinExchange::BitcoinExchange()
 {
-
+	rate_data_.clear();
 }
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &other)
