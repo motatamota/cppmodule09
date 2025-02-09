@@ -17,6 +17,7 @@ private:
 	std::vector<int>	ans_vec_;
 	std::deque<int>		deq_;
 	std::deque<int>		ans_deq_;
+	int					tmp;
 
 	void	SortVector();
 	void	SortDeque();
