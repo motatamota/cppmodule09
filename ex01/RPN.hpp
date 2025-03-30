@@ -7,7 +7,7 @@
 class RPN
 {
 private:
-	std::stack<int> cal;
+	std::stack<long> cal;
 
 	int	ErrorSegment(char c);
 
