@@ -10,7 +10,7 @@ int	main(int ac, char **av)
 		std::cout << "./btc inputfilepath" << std::endl;
 		return (1);
 	}
-	if (exchanger.CreateRateList("cpp_09/data.csv"))
+	if (exchanger.CreateRateList("data.csv"))
 		return (1);
 	exchanger.OutputExchangeResult(*(av + 1));
 }

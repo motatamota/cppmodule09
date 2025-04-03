@@ -26,12 +26,17 @@ BitcoinExchange::~BitcoinExchange()
 
 int	BitcoinExchange::IsThisDay(const t_data &data)
 {
+	// today (2025-12-31)
+	// standard error
 	if (data.year < 0 || data.month < 0 || data.date < 0 || data.rate < 0 ||
 		data.year > 2025 || data.month > 12 || data.date > 31)
 		return (0);
-	if (data.year > 2025 ||
-		(data.year == 2025 && data.month > 1) ||
-		(data.year == 2025 && data.month == 1 && data.date > 1))
+	// ex error
+	if ((data.month == 4 || data.month == 6 || data.month == 9 || data.month == 11) && data.date > 30)
+		return (0);
+	if (data.month == 2 && data.date > 29)
+		return (0);
+	if (data.month == 2 && data.date > 28 && !((data.year % 4 == 0 && !(data.year % 100 == 0)) || data.year % 400 == 0))
 		return (0);
 	return (1);
 }
@@ -85,7 +90,12 @@ int BitcoinExchange::CreateRate(const std::string &day)
 	}
 	if (!(oss >> data.rate))
 	{
-		std::cerr << "Error: " << day << ": is not rate" << std::endl;
+		std::cerr << "Error: " << day << ": rate is not numeric" << std::endl;
+		return (1);
+	}
+	if (!oss.eof())
+	{
+		std::cerr << "Error: " << day << ": rate is not numeric" << std::endl;
 		return (1);
 	}
 	if (!std::isfinite(data.rate))
@@ -152,7 +162,12 @@ int BitcoinExchange::SearchRate(const std::string &day)
 	}
 	if (!(oss >> data.rate))
 	{
-		std::cerr << "Error: " << day << ": is not rate" << std::endl;
+		std::cerr << "Error: " << day << ": rate is not numeric" << std::endl;
+		return (1);
+	}
+	if (!oss.eof())
+	{
+		std::cerr << "Error: " << day << ": rate is not numeric" << std::endl;
 		return (1);
 	}
 	if (data.rate > std::numeric_limits<int>::max())
@@ -234,7 +249,7 @@ void	BitcoinExchange::OutputExchangeResult(const char *file_path)
 	}
 	if (std::getline(file, data) && data != "date | value")
 	{
-		std::cerr << "Error: inputfile unknown first line format" << std::endl;
+		std::cerr << "Error: inputfile unknown first line format: " << std::endl;
 		return ;
 	}
 	while (std::getline(file, data))
