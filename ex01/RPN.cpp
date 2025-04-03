@@ -35,7 +35,7 @@ void	RPN::Calculate(std::string &str)
 {
 	long tmp;
 
-	for (std::string::iterator itr = str.begin();; itr++)
+	for (std::string::iterator itr = str.begin(); itr != str.end(); itr++)
 	{
 		if (itr == str.end() || ErrorSegment(*itr))
 		{
@@ -46,6 +46,11 @@ void	RPN::Calculate(std::string &str)
 			cal.push(*itr - '0');
 		else
 		{
+			if (cal.size() < 2)
+			{
+				std::cout << "Error: less contents" << std::endl;
+				return ;
+			}
 			tmp = cal.top();
 			cal.pop();
 			if (*itr == '+')
@@ -55,13 +60,20 @@ void	RPN::Calculate(std::string &str)
 			else if (*itr == '*')
 				tmp *= cal.top();
 			else if (*itr == '/')
+			{
+				if (tmp == 0)
+				{
+					std::cout << "Error: div by zero" << std::endl;
+					return ;
+				}
 				tmp = cal.top() / tmp;
+			}
 			else
 				std::cout << "Error" << std::endl;
 			cal.pop();
 			if (tmp <  std::numeric_limits<int>::min() || tmp > std::numeric_limits<int>::max())
 			{
-				std::cerr << "Error" << std::endl;
+				std::cerr << "Error: over flow" << std::endl;
 				return ;
 			}
 			cal.push(tmp);
