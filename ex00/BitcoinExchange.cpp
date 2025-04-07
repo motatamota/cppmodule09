@@ -185,6 +185,11 @@ int BitcoinExchange::SearchRate(const std::string &day)
 		std::cerr << "Error: not a positive number." << std::endl;
 		return (1);
 	}
+	if (data.rate > 1000)
+	{
+		std::cerr << "Error: rate is out of range" << std::endl;
+		return (1);
+	}
 	if (!IsThisDay(data))
 	{
 		std::cerr << "Error: " << day << ": out of range day" << std::endl;
