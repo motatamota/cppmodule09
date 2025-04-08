@@ -9,7 +9,7 @@
 # include <cmath>
 # include <algorithm>
 # include <iomanip>
-# define DEBUG 1
+# define DEBUG 0
 
 extern int count;
 class PmergeMe
@@ -19,7 +19,6 @@ private:
 	std::vector<std::vector<int> >	ans_vec_;
 	std::deque<std::deque<int> >	deq_;
 	std::deque<std::deque<int> >	ans_deq_;
-	int					tmp;
 
 	void				SortVector();
 	void				SortDeque();
